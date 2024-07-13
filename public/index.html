@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+  </head>
+  <body>
+    <h2>Hello my bretheren.</h2>
+    <button class="lil-button">Send request</button>
+    <script>
+      const btn = document.querySelector('.lil-button')
+      async function sendMsg() {
+        const res = await fetch('api/info', {
+          method: "POST",
+          headers: {
+            'Content-type': "application/json"
+          },
+          body: JSON.stringify({"information": "This is from the client"})
+        })
+
+        console.log("Request was sent.")
+      }
+      btn.addEventListener('click', () => {
+        sendMsg();
+      })
+    </script>
+  </body>
+</html>

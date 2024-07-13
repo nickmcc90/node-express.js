@@ -52,3 +52,404 @@ Inside of the scripts key.
 3. Now we can make a file called server.js.
 
 Timestamp: 6:40 ** Also make the git repo for this
+DONE
+
+We could put console.log("hello") in server.js. Typing
+npm run dev 
+would run this console.log.
+
+4. Install express now with npm install express 
+
+Express is good for web apps, APIs, performance, and most frameworks
+
+Node modules and package.lock.json shouldn't be touched.
+
+Notice how in dependencies in package.json, we have express. This allows
+anyone to download our project and use express as well just by typing 
+npm install. The dependencies tab in .json makes this possible. That's why
+why can .gitignore our node_modules folder.
+
+5. We also want to install cors.
+npm i cors.
+
+6. We also want to install nodemon
+npm i --save-dev nodemon
+
+This restarts our server everytime we change it instead of us having to manually do it.
+**Explanation on this more later.
+
+7. Now that we've got everything installed, we can access express
+in our server.js.
+
+const express = require('express')
+const app = express()   // inits the server app
+PORT = 4000
+
+app.listen(PORT, () => console.log(`Server has started on port: ${PORT}`)) // listens for requests on port 4000
+
+Nodemon comes in handy when we want to change the PORT in our code to 5005 or something.
+Instead of killing the server and re running npm dev server, we can use nodemon.
+
+8. Go into package.json and inside dev, put nodemon instead of node.
+
+Nodemon is a local dev tool.
+
+9. Now that we've initialized our server, we need to be able to handle network requests.
+This is defining routes, and logic to perform once we get a request at that route.
+
+We can define a route to be the home route, '/'
+
+Upon reaching the home route, we can have the logic for a get request specifically,
+or maybe a delete request.
+
+If someone sent a network request to our IP address, then they would be able to execute
+the code associated with server.js.
+The domain (IP address) identifies the server. Then it goes to the route,
+and depending on the method, we execute specific code.
+
+10. After having get code associated with our port homepage..
+
+app.get('/', (req, res) => {
+  res.send('You have reached the homepage: GET')
+})
+
+If we type localhost:5005 (thats the port we defined) into the browser,
+that will run the GET code we made.
+
+Browser requests are always get by defualt. It isn't the fastest way to test endpoints
+by typing things in the browser all the time. There are technologies that emulate browser
+typing like POSTMAN. But we can just have a rest file. test.rest.
+
+11. Create a file called test.rest. Here we can call the GET request...
+
+###
+GET http://localhost:5005/
+
+A send request button will pop up underneath the hashtags, and we can test 
+our endpoints.
+
+12. When sending a response back to the browser, we can use res.send and
+specify a status as well.
+
+res.status(200).send("hello")
+
+If we didn't want to send any information back, we could just send a status code only.
+
+We can send JSON data back to the browser too. Like this:
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Hello World'
+  })
+})
+
+13. Now let's look at paths. Paths are anything that come after the forward slash.
+We can define new paths and associate actions with them.
+
+Let's talk about post requests.
+
+We can make the skeleton to handle the request like this:
+
+app.post('/', (req, res) => {
+  
+})
+
+Inside of the post, since a user is sending information to us, we can use req.body
+to destructure the information being sent.
+
+app.post('/api/info', (req, res) => {
+  const { information } = req.body
+  res.status(200).json({
+    "message": information
+  })
+})
+
+Now, when testing this endpoint, since it is a POST request, we want to 
+13a. Match the url path correctly.
+13b. Specify the content-type: application/json (tells browser its json being sent)
+13c. Send a json object with the information we want to send.
+
+So the test.rest file would look like this:
+
+###
+POST http://localhost:5005/api/info
+Content-Type: application/json
+
+{
+  "information": "hello"
+}
+
+14. When we send this POST request, we get an error. This is because
+our server is not configured to receive JSON objects yet. We can do that by
+adding a middleware. Express.
+
+app.use(express.json())     This should do the trick in server.js
+
+The request works now.
+
+15. We could make our own database where we push information given to us
+from a post request into our database. We would have to persist the info given
+in the database to have it be alive when we refresh the server.
+
+const db = []
+
+**in the post handling code...
+db.push(information)
+console.log(db)
+
+Easy as pie.
+
+16. Let's work with a PUT request.
+Let's say we want to add additional information to a request
+without adding anything to the body. We can use query parameters.
+We don't even have to send anything in the body, and just have these
+QPs. It looks like this:
+
+http://localhost:5005/api/?word=nick&banana=ripe
+
+Then we can destructure these things inside the put logic. (QPs work for any method)
+
+app.put('/api', (req, res) => {
+  const { word, banana } = req.query
+  res.status(200).json({
+    "message": word + banana
+  })
+})
+
+In this put method, we didn't really do any updating, that requires a database, but
+we did learn about the query parameters.
+
+17. In the delete method, let's learn about dynamic parameters.
+We put a colon in front of the parameter name in the path.
+
+When dealing with dynamic paths, we use req.params. To destructure them out.
+We included two dynamic paths with this example:
+
+###
+DELETE http://localhost:5005/delete/6/name
+
+And...
+
+app.delete('/delete/:id/:name', (req, res) => {
+  const { id, name } = req.params
+  res.status(200).json({
+    "message": id + " " + name
+  })
+})
+
+18. When creating dynamic route code for a specific method,
+it is important to have the dynamic code at the top of the page.
+We want any url that has dynamic code in it to run first, instead 
+of randomly linking with static code.
+
+For example, the DELETE code we have above takes a variable id and name.
+
+HOWEVER, if we had another instance of DELETE code like this...
+
+app.delete('/delete/nick/cool', (req, res) => {
+  console.log('Whatever;)
+})
+
+Then if our variable id and name JUST HAPPEN to be 'nick' and 'cool', then
+this altered DELETE code will run instance of the dynamic DELETE code 
+IF AND ONLY IF this altered DELETE code has been written above the
+dynamic DELETE code.
+
+Make sure to write dynamic code above static code.
+
+19. We are able to send back html as a response to methods.
+If we search google.com, if we check in network, we made a GET
+request to a url of google and google sent back an html file.
+
+We can do the same thing, for instance on our homepage, sending html:
+
+app.get('/', (req, res) => {
+  res.send('<h1>Hello World</h1>')
+})
+
+This would appear as a blank page with this text on it.
+
+We can send a file of html instead of writing it out like that. To do
+this, we need to specify in our server.js that static files that we send
+out are located in a specific folder.
+
+Like this:
+
+app.use(express.static('public'))
+
+When we write this code, any GET request with our home directory of '/'
+is going to default send the index.html file in public. It has to be named index.html.
+
+This means using the code above on line 278 nullifies any other GET request made
+to our home directory.
+
+20. Inside of our html file that we load, we can have a button that accesses
+the server.js file. Check this out...
+
+First, we make a button, grab it from its class name in a script,
+add an event listener to it that runs an async function, make the
+async function to grab the response from the POST code in our server,
+and console.log something.
+
+In the async function, we create a variable res and set it equal to 
+an await fetch url of the POST. The first argument in fetch is the path,
+then (since its a post request) we include an object as the second argument
+with a method, header, and body. The method is post, the header is content-type
+application/json to specify we are sending json, and the body is json.
+
+Like this...
+
+<!DOCTYPE html>
+<html>
+  <head>
+
+  </head>
+  <body>
+    <h2>Hello my bretheren.</h2>
+    <button class="lil-button">Send request</button>
+    <script>
+      const btn = document.querySelector('.lil-button')
+      async function sendMsg() {
+        const res = await fetch('api/info', {
+          method: "POST",
+          headers: {
+            'Content-type': "application/json"
+          },
+          body: JSON.stringify({"information": "This is from the client"})
+        })
+
+        console.log("Request was sent.")
+      }
+      btn.addEventListener('click', () => {
+        sendMsg();
+      })
+    </script>
+  </body>
+</html>
+
+
+This properly activates the button and sends a request.
+
+This is full-stack development. We have a client, then a server, and we
+are communicating between the two of them.
+
+21. When we make apps with React and post them to netlify and stuff like that,
+the domains change. This is where CORS come in. CORS allows the client (of a different origin)
+to make network requests to a server regardless of if that client is the same origin as the server
+or not.
+
+app.use(require('cors')())
+
+22. Middleware. This is good for including authentication.
+Middleware is in-between the request and the response. If we hit
+any endpoint in our server code, we will go through this middleware
+function first, if specified to do so.
+
+We can have a middleware function...
+
+function mw(req, res, next) {
+  console.log("Middleware")
+}
+
+And the specification within an endpoint to run this function or not...
+
+app.delete('/', mw, (req, res) => {
+  console.log("you did it after the mw")
+  res.status(200)
+})
+
+However, with just this alone, we never are able to run the delete request. We
+need to add something inside the mw function.
+
+We add next() inside the mw, like this...
+
+function mw (req, res, next) {
+  console.log("middleware")
+  next()
+}
+
+Now everything can run, and the mw function runs in-between the req
+and res interaction of the endpoint we are reaching. This we can have authentication
+logic nested within this mw function such that if a user is authenticated, we can
+run the next() function. If not, we never let the process advance to the endpoint,
+and we send an error of "log in" or something.
+
+Let's provide an example of protecting an endpoint with middleware on a dynamic route.
+
+** If only returning the status, do res.sendStatus(400). Needs to be sendStatus.
+
+Let's create a new delete code that takes a dynamic id and passes through a mw function.
+
+app.delete('/api/delete/:id', mw, (req, res) => {
+  const { id } = req.params
+  res.status(200).json({ "message": "successfully deleted " + id})
+})
+
+Then, to protect against dynamic ids that AREN'T 8, we write this mw function...
+
+function mw (req, res, next) {
+  console.log("hello")
+  const { id } = req.params
+  console.log(id)
+  if (id != 8) {
+    return res.sendStatus(403)
+  }
+  next()
+}
+
+We return a forbidden status if the id is anything but 8. We also use the != operator
+instead of the !== operator because we only want to compare values. !== compares type and value.
+The id that is deconstructed from the req.params is a string. 
+
+This should work through the mw function with a DELETE request such as this:
+
+###
+DELETE http://localhost:5005/api/delete/8
+
+Boom.
+
+23. Let's say we want to authenticate all of our routes with one middleware
+function without putting the function as the second parameter for each endpoint.
+
+app.use(mw)
+
+Inside our server.js.
+
+To effectively implement this middleware across everything, we can destructure the id 
+inside the mw function as a query parameter (const { id } = req.query), 
+and include an ?id='' parameter in each url we use so we can grab that id in the mw function. 
+Then we would remove the need to have the req.params for a dynamic id.
+
+24. Schedulers. This can be implemented to check on the status of a database.
+
+How it works is we have a database, then we create an elaborate function that makes the
+database get console.logged every 1 second (could be any period of time).
+
+The function looks like this:
+
+function cron(ms, fn) {
+  async function cb() {
+    clearTimeout(timeout)
+    await fn
+    timeout = cb(ms, )
+  }
+  let timeout = setTimeout(cb, ms)
+  return () => { }
+}
+
+function consoleDB() {
+  console.log('DB: ', db)
+}
+
+And we call it like this:
+
+cron(1000, consoleDB)
+
+Explanation: we pass in a unit of time in milliseconds and a function to run into cron.
+We want our database to be logged every second. So our first parameter is 1000ms,
+and the second parameter is a function that console.logs the DB.
+Within cron, we run the async function that we defined in cron to run after 1 second has passed.
+Within the async function, we clear the timeoutid, we run console the db, and then we
+run the async function again.
+
+Of course, we have to init the db.

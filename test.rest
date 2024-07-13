@@ -1,0 +1,29 @@
+###
+GET http://localhost:5005/
+
+###
+POST http://localhost:5005/api/info
+Content-Type: application/json
+
+{
+  "information": "my name is jeff"
+}
+
+###
+PUT http://localhost:5005/api/?word=nick&banana=ripe
+
+###
+DELETE http://localhost:5005/delete/6/name
+
+###
+GET http://localhost:5005/html
+
+
+###
+DELETE http://localhost:5005
+
+// special mw protection url
+
+###
+DELETE http://localhost:5005/api/delete/8
+
