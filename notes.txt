@@ -1,0 +1,54 @@
+Express, Node, and terminal notes
+
+
+Mkdir - means make a folder
+
+Cd .. means to go back a folder
+
+We can run javascript files using Node.js like we would
+Run .py files using python
+
+// example.js
+console.log(“hello”)
+
+>> Node example.js
+
+Just like:
+
+// hello.py
+console.log(“hello”)
+
+>> python hello.py
+
+
+Some things require different versions of node. Installing nvm “node version manager”
+Would be a good idea to do this.
+
+
+Npm is a place that storage a whole lot of people’s code that can help you to build anything. Expess
+Is one of these packages that can be installed with
+
+Npm install express —save
+
+This makes sense now. React, vite, and anything you do to create a project in node has the npm install in front of it.
+People can make bundles of code that do specific things, and people can publish them and they can become
+Popular. Express and vite became popular. These packages can improve upon optimizations or specific tasks.
+
+
+1. If you type npm init -y (the -y is to skip the questions about configurations), a package.json
+Appears. 
+This .json file allows us to store all the different node packages that we want to integrate into our
+Projects. 
+
+**I’m now getting this, there are packages in npm that already have this package.json filled out with scripts
+And dependencies. This is the first time that I’m bare-bones making a server by going into the packages.
+
+2. We are going to be making a server. Server.js. 
+Change “main”: “server.js”
+And put a
+“Dev”: “node server.js”
+Inside of the scripts key.
+
+3. Now we can make a file called server.js.
+
+Timestamp: 6:40 ** Also make the git repo for this
